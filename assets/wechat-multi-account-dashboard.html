@@ -1,0 +1,952 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>多公众号数据管理 Dashboard</title>
+    <style>
+      :root {
+        --bg: #f5f7f8;
+        --panel: #ffffff;
+        --ink: #1d2528;
+        --muted: #657276;
+        --line: #dfe6e8;
+        --teal: #0d8f82;
+        --teal-soft: #e6f6f3;
+        --blue: #2f67d8;
+        --blue-soft: #e9efff;
+        --amber: #c98212;
+        --amber-soft: #fff3d8;
+        --red: #cf4d44;
+        --red-soft: #ffe9e6;
+        --green: #2f8b57;
+        --green-soft: #e8f6ee;
+        --shadow: 0 14px 36px rgba(29, 37, 40, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", "Microsoft YaHei", sans-serif;
+        line-height: 1.45;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .app {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 252px 1fr;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        padding: 18px 14px;
+        background: #121a1d;
+        color: #f7fbfc;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 8px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        font-weight: 850;
+      }
+
+      .brand-mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--teal), var(--blue));
+        color: #fff;
+      }
+
+      .nav-group {
+        display: grid;
+        gap: 5px;
+      }
+
+      .nav-title {
+        margin: 8px 10px 6px;
+        color: #91a1a6;
+        font-size: 11px;
+        font-weight: 850;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .nav-item {
+        min-height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 10px;
+        color: #c8d2d5;
+        font-size: 14px;
+        font-weight: 720;
+      }
+
+      .nav-item.active {
+        background: rgba(13, 143, 130, 0.18);
+        color: #fff;
+      }
+
+      .icon {
+        width: 18px;
+        height: 18px;
+        display: inline-grid;
+        place-items: center;
+        color: currentColor;
+        flex: 0 0 auto;
+      }
+
+      .account-panel {
+        margin-top: auto;
+        padding: 12px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .account-panel strong {
+        display: block;
+        font-size: 14px;
+      }
+
+      .account-panel span {
+        color: #9fb0b5;
+        font-size: 12px;
+      }
+
+      .main {
+        min-width: 0;
+        padding: 22px;
+      }
+
+      .topbar {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+
+      .title-block h1 {
+        margin: 0 0 4px;
+        font-size: 28px;
+        line-height: 1.15;
+        letter-spacing: 0;
+      }
+
+      .title-block p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .field,
+      .segmented,
+      .btn {
+        min-height: 40px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .field {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 12px;
+      }
+
+      .field input {
+        width: 180px;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: var(--ink);
+      }
+
+      select {
+        min-height: 40px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 0 34px 0 12px;
+        color: var(--ink);
+        font-weight: 680;
+      }
+
+      .segmented {
+        display: flex;
+        padding: 3px;
+      }
+
+      .segmented button {
+        min-height: 32px;
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        padding: 0 10px;
+        color: var(--muted);
+        cursor: pointer;
+        font-weight: 760;
+      }
+
+      .segmented button.active {
+        background: var(--ink);
+        color: #fff;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 13px;
+        color: var(--ink);
+        cursor: pointer;
+        font-weight: 760;
+      }
+
+      .btn.primary {
+        border-color: var(--teal);
+        background: var(--teal);
+        color: #fff;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .metric {
+        min-height: 132px;
+        padding: 16px;
+      }
+
+      .metric-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .metric-label {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 760;
+      }
+
+      .badge {
+        min-height: 24px;
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 0 8px;
+        background: var(--green-soft);
+        color: var(--green);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .badge.down {
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .metric-value {
+        margin: 0;
+        font-size: clamp(25px, 3vw, 34px);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .metric-note {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.8fr);
+        gap: 14px;
+        align-items: start;
+      }
+
+      .panel-head {
+        min-height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .panel-head h2 {
+        margin: 0;
+        font-size: 17px;
+        letter-spacing: 0;
+      }
+
+      .panel-head p {
+        margin: 2px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .chart-area {
+        padding: 18px 18px 16px;
+      }
+
+      .chart {
+        height: 270px;
+        position: relative;
+        display: grid;
+        grid-template-rows: repeat(4, 1fr);
+        border-left: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        background:
+          linear-gradient(to bottom, transparent calc(25% - 1px), var(--line) calc(25% - 1px), var(--line) 25%, transparent 25%),
+          linear-gradient(to bottom, transparent calc(50% - 1px), var(--line) calc(50% - 1px), var(--line) 50%, transparent 50%),
+          linear-gradient(to bottom, transparent calc(75% - 1px), var(--line) calc(75% - 1px), var(--line) 75%, transparent 75%);
+        overflow: hidden;
+      }
+
+      .bars {
+        position: absolute;
+        inset: 24px 18px 0 22px;
+        display: grid;
+        grid-template-columns: repeat(14, 1fr);
+        align-items: end;
+        gap: 8px;
+      }
+
+      .bar {
+        min-width: 10px;
+        border-radius: 6px 6px 0 0;
+        background: linear-gradient(180deg, var(--teal), #6ec9bd);
+      }
+
+      .bar:nth-child(3n) {
+        background: linear-gradient(180deg, var(--blue), #8fb1ff);
+      }
+
+      .bar:nth-child(4n) {
+        background: linear-gradient(180deg, var(--amber), #ffd37a);
+      }
+
+      .chart-labels {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .account-list {
+        padding: 12px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .account-row {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 10px;
+        min-height: 64px;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcfc;
+      }
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-weight: 850;
+        background: var(--teal);
+      }
+
+      .account-row:nth-child(2) .avatar {
+        background: var(--blue);
+      }
+
+      .account-row:nth-child(3) .avatar {
+        background: var(--amber);
+      }
+
+      .account-row:nth-child(4) .avatar {
+        background: var(--red);
+      }
+
+      .account-name {
+        font-weight: 790;
+      }
+
+      .account-meta {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .score {
+        width: 46px;
+        height: 30px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: var(--green-soft);
+        color: var(--green);
+        font-size: 13px;
+        font-weight: 850;
+      }
+
+      .score.warn {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .score.bad {
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .lower-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+        gap: 14px;
+        margin-top: 14px;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 760px;
+      }
+
+      th,
+      td {
+        padding: 13px 16px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: middle;
+        font-size: 13px;
+      }
+
+      th {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 850;
+        background: #fafbfb;
+      }
+
+      td strong {
+        display: block;
+        margin-bottom: 3px;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 0 8px;
+        border-radius: 999px;
+        background: var(--blue-soft);
+        color: var(--blue);
+        font-size: 12px;
+        font-weight: 820;
+      }
+
+      .status.live {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .status.review {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .queue {
+        padding: 12px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .queue-item {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+        background: #fbfcfc;
+      }
+
+      .queue-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
+      .queue-title {
+        font-weight: 800;
+        font-size: 14px;
+      }
+
+      .time {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .progress {
+        height: 8px;
+        border-radius: 999px;
+        background: #e8eef0;
+        overflow: hidden;
+      }
+
+      .progress span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: var(--teal);
+      }
+
+      @media (max-width: 1120px) {
+        .app {
+          grid-template-columns: 78px 1fr;
+        }
+
+        .brand span:last-child,
+        .nav-title,
+        .nav-item span,
+        .account-panel {
+          display: none;
+        }
+
+        .sidebar {
+          padding-inline: 10px;
+        }
+
+        .nav-item {
+          justify-content: center;
+        }
+
+        .metrics,
+        .dashboard-grid,
+        .lower-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .dashboard-grid > .card:first-child,
+        .lower-grid > .card:first-child {
+          grid-column: 1 / -1;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .app {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          position: static;
+          height: auto;
+          flex-direction: row;
+          overflow-x: auto;
+          padding: 10px;
+          align-items: center;
+        }
+
+        .brand {
+          border-bottom: 0;
+          padding: 0;
+          flex: 0 0 auto;
+        }
+
+        .nav-group {
+          display: flex;
+          flex: 0 0 auto;
+        }
+
+        .nav-item {
+          padding: 0 12px;
+        }
+
+        .main {
+          padding: 14px;
+        }
+
+        .topbar {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .controls,
+        .field,
+        select,
+        .segmented,
+        .btn {
+          width: 100%;
+        }
+
+        .field input {
+          width: 100%;
+        }
+
+        .segmented button {
+          flex: 1;
+        }
+
+        .metrics,
+        .dashboard-grid,
+        .lower-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .chart {
+          height: 220px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar" aria-label="主导航">
+        <a class="brand" href="#">
+          <span class="brand-mark">数</span>
+          <span>公众号数据舱</span>
+        </a>
+        <nav class="nav-group">
+          <div class="nav-title">Workspace</div>
+          <a class="nav-item active" href="#">
+            <span class="icon">⌂</span><span>总览</span>
+          </a>
+          <a class="nav-item" href="#">
+            <span class="icon">▦</span><span>账号矩阵</span>
+          </a>
+          <a class="nav-item" href="#">
+            <span class="icon">◷</span><span>内容分析</span>
+          </a>
+          <a class="nav-item" href="#">
+            <span class="icon">⇄</span><span>发布队列</span>
+          </a>
+          <a class="nav-item" href="#">
+            <span class="icon">◎</span><span>粉丝画像</span>
+          </a>
+        </nav>
+        <nav class="nav-group">
+          <div class="nav-title">Admin</div>
+          <a class="nav-item" href="#">
+            <span class="icon">⚙</span><span>同步设置</span>
+          </a>
+          <a class="nav-item" href="#">
+            <span class="icon">?</span><span>帮助中心</span>
+          </a>
+        </nav>
+        <div class="account-panel">
+          <strong>运营团队</strong>
+          <span>8 个公众号已连接</span>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="title-block">
+            <h1>多公众号数据管理</h1>
+            <p>统一查看账号增长、内容表现、发布计划和同步健康状态。</p>
+          </div>
+          <div class="controls">
+            <label class="field" aria-label="搜索公众号或文章">
+              <span class="icon">⌕</span>
+              <input type="search" placeholder="搜索账号、文章、标签" />
+            </label>
+            <select aria-label="公众号筛选">
+              <option>全部公众号</option>
+              <option>码搭AI</option>
+              <option>增长实验室</option>
+              <option>产品手记</option>
+              <option>技术栈漫游</option>
+            </select>
+            <div class="segmented" aria-label="时间范围">
+              <button class="active" type="button">7天</button>
+              <button type="button">30天</button>
+              <button type="button">季度</button>
+            </div>
+            <button class="btn primary" type="button"><span class="icon">↧</span>导出</button>
+          </div>
+        </header>
+
+        <section class="metrics" aria-label="关键指标">
+          <article class="card metric">
+            <div class="metric-top">
+              <span class="metric-label">总阅读量</span>
+              <span class="badge">+18.4%</span>
+            </div>
+            <h2 class="metric-value">128.6万</h2>
+            <div class="metric-note">较上周期增加 19.8 万</div>
+          </article>
+          <article class="card metric">
+            <div class="metric-top">
+              <span class="metric-label">新增关注</span>
+              <span class="badge">+9.7%</span>
+            </div>
+            <h2 class="metric-value">24,391</h2>
+            <div class="metric-note">来自 8 个公众号</div>
+          </article>
+          <article class="card metric">
+            <div class="metric-top">
+              <span class="metric-label">平均打开率</span>
+              <span class="badge down">-2.1%</span>
+            </div>
+            <h2 class="metric-value">36.8%</h2>
+            <div class="metric-note">标题测试需关注</div>
+          </article>
+          <article class="card metric">
+            <div class="metric-top">
+              <span class="metric-label">待发布内容</span>
+              <span class="badge">12篇</span>
+            </div>
+            <h2 class="metric-value">5个时段</h2>
+            <div class="metric-note">今日 20:00 有 3 篇排队</div>
+          </article>
+        </section>
+
+        <section class="dashboard-grid">
+          <article class="card">
+            <div class="panel-head">
+              <div>
+                <h2>阅读与关注趋势</h2>
+                <p>按天聚合全部公众号表现，颜色代表不同账号组。</p>
+              </div>
+              <button class="btn" type="button">查看明细</button>
+            </div>
+            <div class="chart-area">
+              <div class="chart" aria-label="阅读趋势柱状图">
+                <div class="bars">
+                  <span class="bar" style="height: 52%"></span>
+                  <span class="bar" style="height: 66%"></span>
+                  <span class="bar" style="height: 43%"></span>
+                  <span class="bar" style="height: 74%"></span>
+                  <span class="bar" style="height: 61%"></span>
+                  <span class="bar" style="height: 82%"></span>
+                  <span class="bar" style="height: 69%"></span>
+                  <span class="bar" style="height: 57%"></span>
+                  <span class="bar" style="height: 88%"></span>
+                  <span class="bar" style="height: 77%"></span>
+                  <span class="bar" style="height: 92%"></span>
+                  <span class="bar" style="height: 64%"></span>
+                  <span class="bar" style="height: 80%"></span>
+                  <span class="bar" style="height: 96%"></span>
+                </div>
+              </div>
+              <div class="chart-labels">
+                <span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span><span>周日</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="panel-head">
+              <div>
+                <h2>账号健康</h2>
+                <p>同步、增长、内容稳定性综合评分。</p>
+              </div>
+            </div>
+            <div class="account-list">
+              <div class="account-row">
+                <span class="avatar">码</span>
+                <div><div class="account-name">码搭AI</div><div class="account-meta">粉丝 18.2万 · 同步正常</div></div>
+                <span class="score">96</span>
+              </div>
+              <div class="account-row">
+                <span class="avatar">增</span>
+                <div><div class="account-name">增长实验室</div><div class="account-meta">粉丝 9.7万 · 打开率上升</div></div>
+                <span class="score">91</span>
+              </div>
+              <div class="account-row">
+                <span class="avatar">产</span>
+                <div><div class="account-name">产品手记</div><div class="account-meta">粉丝 6.4万 · 需补档</div></div>
+                <span class="score warn">76</span>
+              </div>
+              <div class="account-row">
+                <span class="avatar">技</span>
+                <div><div class="account-name">技术栈漫游</div><div class="account-meta">粉丝 12.1万 · 授权过期</div></div>
+                <span class="score bad">58</span>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="lower-grid">
+          <article class="card">
+            <div class="panel-head">
+              <div>
+                <h2>内容表现排行</h2>
+                <p>聚合多公众号文章数据，支持快速定位爆款与低效内容。</p>
+              </div>
+              <button class="btn" type="button">筛选字段</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>文章</th>
+                    <th>公众号</th>
+                    <th>状态</th>
+                    <th>阅读</th>
+                    <th>分享</th>
+                    <th>转粉率</th>
+                    <th>发布时间</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>如何用 AI 搭建个人内容系统</strong><span class="account-meta">内容方法论 · AI 写作</span></td>
+                    <td>码搭AI</td>
+                    <td><span class="status live">已发布</span></td>
+                    <td>86,420</td>
+                    <td>3,921</td>
+                    <td>4.8%</td>
+                    <td>06-08 08:30</td>
+                  </tr>
+                  <tr>
+                    <td><strong>公众号标题 A/B 测试复盘</strong><span class="account-meta">增长实验 · 数据分析</span></td>
+                    <td>增长实验室</td>
+                    <td><span class="status live">已发布</span></td>
+                    <td>54,103</td>
+                    <td>2,080</td>
+                    <td>3.1%</td>
+                    <td>06-07 21:00</td>
+                  </tr>
+                  <tr>
+                    <td><strong>从需求池到发布节奏的管理表</strong><span class="account-meta">产品运营 · 模板</span></td>
+                    <td>产品手记</td>
+                    <td><span class="status review">复核中</span></td>
+                    <td>18,994</td>
+                    <td>420</td>
+                    <td>1.9%</td>
+                    <td>06-08 20:00</td>
+                  </tr>
+                  <tr>
+                    <td><strong>TypeScript 项目里的代码块规范</strong><span class="account-meta">技术内容 · 代码高亮</span></td>
+                    <td>技术栈漫游</td>
+                    <td><span class="status">待同步</span></td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>06-09 09:00</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="panel-head">
+              <div>
+                <h2>发布队列</h2>
+                <p>跨账号排期、同步进度与风险提醒。</p>
+              </div>
+            </div>
+            <div class="queue">
+              <div class="queue-item">
+                <div class="queue-top">
+                  <span class="queue-title">码搭AI · 产品发布稿</span>
+                  <span class="time">今天 20:00</span>
+                </div>
+                <div class="progress" aria-label="排版完成度 92%"><span style="width: 92%"></span></div>
+              </div>
+              <div class="queue-item">
+                <div class="queue-top">
+                  <span class="queue-title">增长实验室 · 周报</span>
+                  <span class="time">今天 21:30</span>
+                </div>
+                <div class="progress" aria-label="排版完成度 72%"><span style="width: 72%"></span></div>
+              </div>
+              <div class="queue-item">
+                <div class="queue-top">
+                  <span class="queue-title">产品手记 · 模板合集</span>
+                  <span class="time">明天 08:00</span>
+                </div>
+                <div class="progress" aria-label="排版完成度 54%"><span style="width: 54%"></span></div>
+              </div>
+              <div class="queue-item">
+                <div class="queue-top">
+                  <span class="queue-title">技术栈漫游 · 授权待处理</span>
+                  <span class="time">需操作</span>
+                </div>
+                <div class="progress" aria-label="排版完成度 28%"><span style="width: 28%; background: var(--red)"></span></div>
+              </div>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      document.querySelectorAll(".segmented button").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".segmented button").forEach((item) => item.classList.remove("active"));
+          button.classList.add("active");
+        });
+      });
+    </script>
+  </body>
+</html>

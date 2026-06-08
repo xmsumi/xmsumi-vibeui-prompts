@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VibeUI Prompt Library</title>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --surface-hover: #1a1a26;
+  --border: #2a2a3a;
+  --text: #e8e8f0;
+  --text-muted: #8888a0;
+  --accent: #6c5ce7;
+  --accent-light: #a29bfe;
+  --accent-bg: rgba(108,92,231,0.12);
+  --success: #00b894;
+  --success-bg: rgba(0,184,148,0.12);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(108,92,231,0.08) 0%, rgba(0,184,148,0.06) 100%);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+.header h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-light), var(--success));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.header p { color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem; }
+
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent-light);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Search */
+.search-bar {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 0.875rem 1rem 0.875rem 2.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-bar input:focus { border-color: var(--accent); }
+
+.search-bar svg {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+/* Category chips */
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.chip {
+  padding: 0.4rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.chip:hover { border-color: var(--accent); color: var(--text); }
+.chip.active {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  color: var(--accent-light);
+}
+
+.chip .count {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+/* Prompt cards */
+.prompts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.prompt-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+}
+
+.prompt-card:hover {
+  border-color: var(--accent);
+  background: var(--surface-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+.prompt-card .card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.prompt-card .card-id {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent-light);
+  background: var(--accent-bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.prompt-card .card-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
+.prompt-card .card-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.prompt-card .card-category {
+  display: inline-block;
+  font-size: 0.7rem;
+  color: var(--success);
+  background: var(--success-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  max-width: 680px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 2rem;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+}
+
+.modal-close:hover { border-color: var(--accent); color: var(--text); }
+
+.modal .modal-id {
+  font-size: 0.8rem;
+  color: var(--accent-light);
+  font-family: monospace;
+  margin-bottom: 0.5rem;
+}
+
+.modal .modal-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.modal .modal-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal .prompt-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.modal .prompt-text {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1.25rem;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.copy-btn:hover { background: var(--accent-light); }
+.copy-btn.copied { background: var(--success); }
+
+/* Combos section */
+.combos-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.combos-section h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1.25rem;
+  color: var(--text);
+}
+
+.combo-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.combo-card h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--accent-light);
+}
+
+.combo-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.combo-chip {
+  padding: 3px 10px;
+  background: var(--accent-bg);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: var(--accent-light);
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+}
+
+.empty-state svg { margin-bottom: 1rem; opacity: 0.5; }
+.empty-state p { font-size: 0.95rem; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .container { padding: 1rem; }
+  .header h1 { font-size: 1.6rem; }
+  .prompts-grid { grid-template-columns: 1fr; }
+  .stats-row { gap: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>VibeUI Prompt Library</h1>
+    <p>92 个精选 UI 组件提示词，覆盖 15 个分类 — 用于 Vibecoding 快速生成</p>
+    <div class="stats-row">
+      <div class="stat"><span class="stat-value">92</span><span class="stat-label">Prompts</span></div>
+      <div class="stat"><span class="stat-value">15</span><span class="stat-label">Categories</span></div>
+      <div class="stat"><span class="stat-value">4</span><span class="stat-label">Combos</span></div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="searchInput" placeholder="搜索提示词（输入关键词、编号或分类）...">
+  </div>
+
+  <!-- Categories -->
+  <div class="categories" id="categories"></div>
+
+  <!-- Prompt Cards -->
+  <div class="prompts-grid" id="promptsGrid"></div>
+
+  <!-- Combos -->
+  <div class="combos-section">
+    <h2>Popular Combos</h2>
+    <div id="combosContainer"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div class="modal-id" id="modalId"></div>
+    <div class="modal-name" id="modalName"></div>
+    <div class="modal-desc" id="modalDesc"></div>
+    <div class="prompt-label">Full Prompt</div>
+    <div class="prompt-text" id="modalPrompt"></div>
+    <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy Prompt
+    </button>
+  </div>
+</div>
+
+<script>
+const STYLE_SUFFIX = "Match the visual style, colors, typography, and overall aesthetic of the UI shown in my screenshot.";
+
+const categories = [
+  { id: "all", name: "All", name_zh: "全部", count: 92 },
+  { id: "auth-forms", name: "Auth Forms", name_zh: "认证表单", count: 6 },
+  { id: "pricing", name: "Pricing", name_zh: "定价", count: 8 },
+  { id: "features-bento", name: "Features / Bento", name_zh: "功能展示", count: 8 },
+  { id: "hero-sections", name: "Hero Sections", name_zh: "首屏", count: 8 },
+  { id: "cta-banners", name: "CTA Banners", name_zh: "行动号召", count: 7 },
+  { id: "stats-bars", name: "Stats Bars", name_zh: "数据统计", count: 7 },
+  { id: "nav-bars", name: "Nav Bars", name_zh: "导航栏", count: 8 },
+  { id: "testimonials", name: "Testimonials", name_zh: "用户评价", count: 8 },
+  { id: "footer", name: "Footer", name_zh: "页脚", count: 5 },
+  { id: "faq", name: "FAQ", name_zh: "常见问题", count: 5 },
+  { id: "dashboards", name: "Dashboards", name_zh: "仪表盘", count: 6 },
+  { id: "onboarding", name: "Onboarding", name_zh: "引导流程", count: 4 },
+  { id: "blog-content", name: "Blog / Content", name_zh: "博客内容", count: 4 },
+  { id: "contact", name: "Contact", name_zh: "联系方式", count: 3 },
+  { id: "bonus", name: "Bonus", name_zh: "额外组件", count: 5 }
+];
+
+const prompts = [
+  // Auth Forms
+  { id: "auth-1", name: "Split-screen with visual", cat: "auth-forms", desc: "Form fields on one side, visual panel on the other", prompt: "Create an auth form as a split-screen layout. Place the form fields on one side and a visual panel on the other (product screenshot, illustration, or branded graphic area). Include email, password, and a primary CTA. " + STYLE_SUFFIX },
+  { id: "auth-2", name: "Centered card on background", cat: "auth-forms", desc: "Floating card with heading, email, password, CTA on full-page background", prompt: "Create an auth form as a centered floating card on a full-page background. Include heading, email, password, primary CTA, and a link to switch to sign up. " + STYLE_SUFFIX },
+  { id: "auth-3", name: "Minimal single-column", cat: "auth-forms", desc: "No card container — just logo, heading, fields, and CTA stacked", prompt: "Create an auth form as a minimal single-column layout with no card container — just the logo, heading, form fields, and CTA stacked cleanly down the page. " + STYLE_SUFFIX },
+  { id: "auth-4", name: "Social-first stack", cat: "auth-forms", desc: "Social login buttons primary at top, email/password secondary below", prompt: "Create an auth form with social login buttons (Google, GitHub, Apple) as the primary option at the top, and email/password collapsed or secondary below a divider that says \"or continue with email\". " + STYLE_SUFFIX },
+  { id: "auth-5", name: "Magic link only", cat: "auth-forms", desc: "Single email input and one CTA — no password field", prompt: "Create an auth form as a magic-link-only flow. A single email input and one primary CTA button — no password field. Include a short line of helper text explaining a login link will be sent to their email. " + STYLE_SUFFIX },
+  { id: "auth-6", name: "Multi-step wizard", cat: "auth-forms", desc: "Progress indicator, signup split across 2-3 steps with back/next", prompt: "Create an auth form as a multi-step wizard with a progress indicator at the top. Split signup across 2-3 logical steps (e.g. email \u2192 password \u2192 profile details) with back/next navigation. " + STYLE_SUFFIX },
+  // Pricing
+  { id: "pr-1", name: "Classic 3-tier cards", cat: "pricing", desc: "Three side-by-side tier cards, middle highlighted as recommended", prompt: "Create a pricing section with three side-by-side tier cards (e.g. Starter, Pro, Business) with the middle tier visually highlighted as the recommended option. Include plan names, prices, feature lists, and CTAs. " + STYLE_SUFFIX },
+  { id: "pr-2", name: "Monthly/annual toggle", cat: "pricing", desc: "Billing toggle with 'save X%' badge, prices update dynamically", prompt: "Create a pricing section with a monthly/annual billing toggle at the top and a \"save X%\" badge on the annual option. Prices should visibly update based on the toggle. " + STYLE_SUFFIX },
+  { id: "pr-3", name: "Comparison table", cat: "pricing", desc: "Plans as columns, features as rows with checkmarks/dashes", prompt: "Create a pricing section as a detailed comparison table with plans as columns and features as rows, using checkmarks and dashes to show what's included in each tier. " + STYLE_SUFFIX },
+  { id: "pr-4", name: "Single-tier hero", cat: "pricing", desc: "One large centered card with price, features, and CTA", prompt: "Create a pricing section as a single-tier hero layout \u2014 one large centered card with the price, a full feature list, and a prominent CTA. " + STYLE_SUFFIX },
+  { id: "pr-5", name: "Usage slider", cat: "pricing", desc: "Interactive slider that dynamically updates the price", prompt: "Create a pricing section with an interactive usage slider at the top (e.g. users, requests, or seats) that dynamically updates the displayed price below. " + STYLE_SUFFIX },
+  { id: "pr-6", name: "Credit pack grid", cat: "pricing", desc: "Grid of credit pack tiles with amounts, prices, badges", prompt: "Create a pricing section as a grid of credit pack tiles, each showing the credit amount, price, and a \"best value\" or \"most popular\" badge on one option. " + STYLE_SUFFIX },
+  { id: "pr-7", name: "Free vs Pro split", cat: "pricing", desc: "Two-column split with strong contrast between tiers", prompt: "Create a pricing section as a two-column split between a Free tier and a Pro tier, with strong visual contrast between the two so the upgrade path is obvious. " + STYLE_SUFFIX },
+  { id: "pr-8", name: "Stacked mobile-first cards", cat: "pricing", desc: "Full-width stacked cards, one per tier", prompt: "Create a pricing section as full-width stacked cards, one per tier. No horizontal comparison \u2014 each card stands on its own with its full feature list visible. " + STYLE_SUFFIX },
+  // Features / Bento
+  { id: "ft-1", name: "3-column icon grid", cat: "features-bento", desc: "Three-column grid with icon, title, and description", prompt: "Create a feature list as a three-column grid, each column containing an icon, feature title, and short description. " + STYLE_SUFFIX },
+  { id: "ft-2", name: "Bento grid", cat: "features-bento", desc: "Asymmetric tiles of varying sizes in bento layout", prompt: "Create a feature list as an asymmetric bento grid \u2014 tiles of varying sizes arranged in an interesting layout, with the most important features occupying larger tiles. " + STYLE_SUFFIX },
+  { id: "ft-3", name: "Alternating rows", cat: "features-bento", desc: "Zigzag rows with text and visual alternating sides", prompt: "Create a feature list as alternating zigzag rows \u2014 each feature has text on one side and a visual/screenshot placeholder on the other, with sides swapping on each row. " + STYLE_SUFFIX },
+  { id: "ft-4", name: "Tabbed features", cat: "features-bento", desc: "Tabbed interface switching between features with visuals", prompt: "Create a feature list as a tabbed interface where each tab switches between different features, with each tab revealing a screenshot or visual alongside the feature description. " + STYLE_SUFFIX },
+  { id: "ft-5", name: "Accordion list", cat: "features-bento", desc: "Vertical accordion of collapsible feature rows", prompt: "Create a feature list as a vertical accordion of collapsible rows. Each row shows the feature title, with full description and visuals expanding on click. " + STYLE_SUFFIX },
+  { id: "ft-6", name: "Scroll-triggered reveal", cat: "features-bento", desc: "Sticky visual with scrolling feature descriptions", prompt: "Create a feature list with a sticky visual on one side that stays in place while feature descriptions scroll past on the other side, with each feature highlighting in turn. " + STYLE_SUFFIX },
+  { id: "ft-7", name: "Icon wall", cat: "features-bento", desc: "Dense grid of small icon tiles with short labels", prompt: "Create a feature list as a dense grid of small icon tiles \u2014 compact cards with just an icon and short label, showing many features at a glance. " + STYLE_SUFFIX },
+  { id: "ft-8", name: "Before/after comparison", cat: "features-bento", desc: "Side-by-side without vs. with the product", prompt: "Create a feature list as a before/after comparison showing what things look like without the product on one side and with the product on the other. " + STYLE_SUFFIX },
+  // Hero Sections
+  { id: "hr-1", name: "Centered text + screenshot", cat: "hero-sections", desc: "Centered heading, subheading, CTAs with screenshot below", prompt: "Create a hero section with centered heading, subheading, and CTAs at the top, and a large product screenshot or visual positioned directly below. " + STYLE_SUFFIX },
+  { id: "hr-2", name: "Split hero", cat: "hero-sections", desc: "Heading and CTAs on one side, mockup on the other", prompt: "Create a hero section as a split layout \u2014 heading, subheading, and CTAs on one side, and a product mockup or visual on the other. " + STYLE_SUFFIX },
+  { id: "hr-3", name: "Video background", cat: "hero-sections", desc: "Looping video/animated background behind heading and CTAs", prompt: "Create a hero section with a looping video or animated background behind the heading text and CTAs. Overlay the text clearly so it remains readable. " + STYLE_SUFFIX },
+  { id: "hr-4", name: "Animated gradient mesh", cat: "hero-sections", desc: "Animated gradient mesh background with content on top", prompt: "Create a hero section with an animated gradient mesh background and the heading, subheading, and CTAs layered centrally on top. " + STYLE_SUFFIX },
+  { id: "hr-5", name: "Terminal/code hero", cat: "hero-sections", desc: "Terminal or code-editor visual with typing animation", prompt: "Create a hero section with a terminal or code-editor visual as the central element \u2014 featuring an animated typing effect or code snippet \u2014 alongside the heading and CTAs. " + STYLE_SUFFIX },
+  { id: "hr-6", name: "Floating UI elements", cat: "hero-sections", desc: "Multiple product screenshots floating around heading", prompt: "Create a hero section with multiple product screenshots or UI cards floating, tilted, or layered around the central heading and CTAs. " + STYLE_SUFFIX },
+  { id: "hr-7", name: "Big bold typography", cat: "hero-sections", desc: "Oversized bold typography as focal point", prompt: "Create a hero section with oversized, bold typography as the focal point \u2014 the headline dominating the viewport with minimal supporting elements. " + STYLE_SUFFIX },
+  { id: "hr-8", name: "Hero with inline form", cat: "hero-sections", desc: "Email capture form embedded directly under heading", prompt: "Create a hero section with an email capture form embedded directly under the heading \u2014 a single input and CTA button inline, instead of a separate button. " + STYLE_SUFFIX },
+  // CTA Banners
+  { id: "cta-1", name: "Full-bleed gradient banner", cat: "cta-banners", desc: "Full-bleed section with gradient, heading, and CTA", prompt: "Create a CTA banner as a full-bleed section with a gradient background, centered heading, short supporting line, and a prominent CTA button. " + STYLE_SUFFIX },
+  { id: "cta-2", name: "Split CTA card", cat: "cta-banners", desc: "Card with heading on one side, CTA on the other", prompt: "Create a CTA banner as a contained card with the heading and description on one side and the CTA button aligned on the other. " + STYLE_SUFFIX },
+  { id: "cta-3", name: "Sticky bottom bar", cat: "cta-banners", desc: "Fixed bar at viewport bottom with message and CTA", prompt: "Create a CTA as a sticky bar fixed to the bottom of the viewport, with a short message, CTA button, and a dismiss option. " + STYLE_SUFFIX },
+  { id: "cta-4", name: "Patterned background", cat: "cta-banners", desc: "Subtle pattern/texture behind centered message", prompt: "Create a CTA banner with a subtle pattern or texture in the background (dots, grid, noise) behind the centered message and button. " + STYLE_SUFFIX },
+  { id: "cta-5", name: "Dual-CTA", cat: "cta-banners", desc: "Two buttons side by side \u2014 primary and secondary", prompt: "Create a CTA banner with two buttons side by side \u2014 a primary action and a secondary action \u2014 under the heading and supporting text. " + STYLE_SUFFIX },
+  { id: "cta-6", name: "Inline email capture CTA", cat: "cta-banners", desc: "Email input and submit inline beneath heading", prompt: "Create a CTA banner with an inline email capture \u2014 heading, subheading, then an email input and submit button inline beneath. " + STYLE_SUFFIX },
+  { id: "cta-7", name: "Testimonial + CTA combo", cat: "cta-banners", desc: "Customer quote above heading and CTA", prompt: "Create a CTA banner with a customer quote or testimonial positioned above the heading and CTA, reinforcing the action with social proof. " + STYLE_SUFFIX },
+  // Stats Bars
+  { id: "st-1", name: "Horizontal 4-column numbers", cat: "stats-bars", desc: "Four large numbers in a row with labels", prompt: "Create a stats bar as a horizontal row of four large numbers, each with a small descriptive label underneath. " + STYLE_SUFFIX },
+  { id: "st-2", name: "Animated count-up", cat: "stats-bars", desc: "Numbers animate counting up on scroll", prompt: "Create a stats bar with numbers that animate counting up when scrolled into view, each with a supporting label. " + STYLE_SUFFIX },
+  { id: "st-3", name: "Icon + stat pairs", cat: "stats-bars", desc: "Icon paired with each number and label", prompt: "Create a stats bar with an icon next to each stat, pairing a relevant symbol with each number and label. " + STYLE_SUFFIX },
+  { id: "st-4", name: "Logo bar + stats combo", cat: "stats-bars", desc: "Customer logos beside key stats", prompt: "Create a combined section with a row of customer/partner logos above or beside key stats like \"10k+ users\" or \"trusted by 500+ teams\". " + STYLE_SUFFIX },
+  { id: "st-5", name: "Vertical stacked stats", cat: "stats-bars", desc: "Vertical stack for narrow column or sidebar", prompt: "Create a stats component as a vertical stack of stats suited for a narrow column or sidebar, with each number and label stacked. " + STYLE_SUFFIX },
+  { id: "st-6", name: "Stats over full-bleed image", cat: "stats-bars", desc: "Full-bleed image/gradient with overlaid stats", prompt: "Create a stats bar as a full-bleed section with an image or gradient background, and the stats overlaid on top with strong contrast. " + STYLE_SUFFIX },
+  { id: "st-7", name: "Card-based stats", cat: "stats-bars", desc: "Row of bordered cards, one stat each", prompt: "Create a stats bar as a row of individual bordered cards, each containing one stat and its label. " + STYLE_SUFFIX },
+  // Nav Bars
+  { id: "nv-1", name: "Minimal logo + links + CTA", cat: "nav-bars", desc: "Logo left, links center/right, CTA far right", prompt: "Create a nav bar as a clean horizontal layout \u2014 logo on the left, navigation links in the middle or right, and a primary CTA button at the far right. " + STYLE_SUFFIX },
+  { id: "nv-2", name: "Centered logo split nav", cat: "nav-bars", desc: "Logo centered with links split on either side", prompt: "Create a nav bar with the logo centered and navigation links split evenly on either side. " + STYLE_SUFFIX },
+  { id: "nv-3", name: "Mega menu", cat: "nav-bars", desc: "Full-width dropdown with categorized sub-links", prompt: "Create a nav bar where hovering a top-level link reveals a full-width mega menu dropdown with categorized sub-links and optional visuals. " + STYLE_SUFFIX },
+  { id: "nv-4", name: "Sidebar nav", cat: "nav-bars", desc: "Vertical sidebar with logo, links, user section", prompt: "Create a vertical sidebar navigation on the left side of the page, with the logo at the top, navigation links stacked, and a user/account section at the bottom. " + STYLE_SUFFIX },
+  { id: "nv-5", name: "Floating pill nav", cat: "nav-bars", desc: "Rounded pill detached from top, centered with shadow", prompt: "Create a nav bar as a floating rounded pill detached from the top edge of the page, centered horizontally with a subtle shadow. " + STYLE_SUFFIX },
+  { id: "nv-6", name: "Transparent over hero", cat: "nav-bars", desc: "Transparent over hero, solid on scroll", prompt: "Create a nav bar that appears transparent when layered over the hero section, becoming solid on scroll. " + STYLE_SUFFIX },
+  { id: "nv-7", name: "Command-palette nav", cat: "nav-bars", desc: "Search/command-palette (\u2318K) as central element", prompt: "Create a nav bar with a prominent search or command-palette input (\u2318K style) as the central element, with minimal links around it. " + STYLE_SUFFIX },
+  { id: "nv-8", name: "Bottom mobile nav", cat: "nav-bars", desc: "Bottom tab bar with icons and labels, app-style", prompt: "Create a bottom tab bar for mobile \u2014 icons with labels fixed to the bottom of the viewport, app-style. " + STYLE_SUFFIX },
+  // Testimonials
+  { id: "ts-1", name: "3-column quote cards", cat: "testimonials", desc: "Three side-by-side cards with photo, name, role, quote", prompt: "Create a testimonial section as three side-by-side quote cards, each with a customer photo, name, role, and quote. " + STYLE_SUFFIX },
+  { id: "ts-2", name: "Marquee scroll", cat: "testimonials", desc: "Infinite horizontally scrolling testimonial tiles", prompt: "Create a testimonial section as an infinite horizontally scrolling marquee of testimonial tiles. " + STYLE_SUFFIX },
+  { id: "ts-3", name: "Masonry grid", cat: "testimonials", desc: "Pinterest-style grid of varied-height cards", prompt: "Create a testimonial section as a masonry/Pinterest-style grid of varied-height testimonial cards. " + STYLE_SUFFIX },
+  { id: "ts-4", name: "Single featured testimonial", cat: "testimonials", desc: "One large featured quote with photo and company logo", prompt: "Create a testimonial section as a single large featured quote with the customer's photo, name, role, and company logo prominently displayed. " + STYLE_SUFFIX },
+  { id: "ts-5", name: "Video testimonial grid", cat: "testimonials", desc: "Grid of clickable video thumbnails with play icon", prompt: "Create a testimonial section as a grid of clickable video thumbnails, each with a play icon and the customer's name and company. " + STYLE_SUFFIX },
+  { id: "ts-6", name: "Tweet wall", cat: "testimonials", desc: "Cards styled like X/Twitter posts", prompt: "Create a testimonial section as a wall of cards styled like X/Twitter posts \u2014 avatar, handle, timestamp, and quote content. " + STYLE_SUFFIX },
+  { id: "ts-7", name: "Logo cloud", cat: "testimonials", desc: "Clean grid/row of customer/partner logos", prompt: "Create a logo cloud \u2014 a clean grid or row of customer/partner logos with a short heading above. " + STYLE_SUFFIX },
+  { id: "ts-8", name: "Carousel with dots", cat: "testimonials", desc: "Single-testimonial carousel with navigation dots", prompt: "Create a testimonial section as a single-testimonial carousel with navigation dots or arrows to cycle through. " + STYLE_SUFFIX },
+  // Footer
+  { id: "ft-1f", name: "Multi-column sitemap", cat: "footer", desc: "Grouped links, logo, tagline, copyright", prompt: "Create a footer as a multi-column sitemap with grouped links (Product, Company, Resources, Legal), the logo and tagline on the far left, and copyright at the bottom. " + STYLE_SUFFIX },
+  { id: "ft-2f", name: "Minimal single-row", cat: "footer", desc: "Logo, links, and copyright in one row", prompt: "Create a footer as a minimal single row \u2014 logo, a few key links, and copyright text inline. " + STYLE_SUFFIX },
+  { id: "ft-3f", name: "Giant logo footer", cat: "footer", desc: "Huge wordmark as centerpiece with links around", prompt: "Create a footer with a huge wordmark or logo as the centerpiece, and smaller supporting links arranged around or below it. " + STYLE_SUFFIX },
+  { id: "ft-4f", name: "Newsletter-first footer", cat: "footer", desc: "Newsletter signup as dominant element", prompt: "Create a footer with a newsletter signup as the dominant element \u2014 large heading, email input, CTA \u2014 with navigation links secondary below. " + STYLE_SUFFIX },
+  { id: "ft-5f", name: "Status indicator footer", cat: "footer", desc: "Live system status indicator with links and logo", prompt: "Create a footer that includes a live system status indicator (e.g. \"All systems operational\") alongside the usual links and logo. " + STYLE_SUFFIX },
+  // FAQ
+  { id: "fq-1", name: "Accordion single column", cat: "faq", desc: "Single-column accordion, expand on click", prompt: "Create an FAQ section as a single-column accordion. Each question expands to reveal its answer on click. " + STYLE_SUFFIX },
+  { id: "fq-2", name: "Two-column accordion", cat: "faq", desc: "Questions split across two columns", prompt: "Create an FAQ section as a two-column accordion layout, splitting the questions across two columns. " + STYLE_SUFFIX },
+  { id: "fq-3", name: "Chat-bubble Q&A", cat: "faq", desc: "Questions and answers in alternating chat bubbles", prompt: "Create an FAQ section styled as a chat conversation \u2014 questions and answers in alternating chat bubbles. " + STYLE_SUFFIX },
+  { id: "fq-4", name: "Searchable FAQ", cat: "faq", desc: "Search bar filters questions as user types", prompt: "Create an FAQ section with a search bar at the top that filters the question list as the user types. " + STYLE_SUFFIX },
+  { id: "fq-5", name: "Categorized tabs", cat: "faq", desc: "Category tabs switch between filtered question sets", prompt: "Create an FAQ section with category tabs at the top (e.g. Billing, Product, Technical) that switch between filtered sets of questions. " + STYLE_SUFFIX },
+  // Dashboards
+  { id: "ds-1", name: "Sidebar + main content", cat: "dashboards", desc: "Vertical sidebar nav with main content area", prompt: "Create a dashboard with a vertical sidebar on the left containing navigation, and the main content area filling the rest of the viewport. " + STYLE_SUFFIX },
+  { id: "ds-2", name: "Top nav + content", cat: "dashboards", desc: "Horizontal top nav with full-width content, no sidebar", prompt: "Create a dashboard with a horizontal top navigation bar and the main content filling the full width beneath it \u2014 no sidebar. " + STYLE_SUFFIX },
+  { id: "ds-3", name: "Three-pane layout", cat: "dashboards", desc: "Sidebar, middle list, detail panel on right", prompt: "Create a dashboard as a three-pane layout \u2014 sidebar navigation, a middle list/feed pane, and a detail panel on the right. " + STYLE_SUFFIX },
+  { id: "ds-4", name: "Kanban board", cat: "dashboards", desc: "Stage columns with draggable cards", prompt: "Create a dashboard as a kanban board with columns representing stages, and draggable cards within each column. " + STYLE_SUFFIX },
+  { id: "ds-5", name: "Metric cards + chart", cat: "dashboards", desc: "Grid of metric cards at top, larger chart below", prompt: "Create a dashboard with a grid of metric cards at the top showing key numbers, and a larger chart or visualization below. " + STYLE_SUFFIX },
+  { id: "ds-6", name: "Empty state", cat: "dashboards", desc: "Centered illustration, heading, and CTA", prompt: "Create an empty state with a centered illustration or icon, a short heading explaining what's missing, and a clear CTA to get started. " + STYLE_SUFFIX },
+  // Onboarding
+  { id: "ob-1", name: "Checklist onboarding", cat: "onboarding", desc: "Checklist of setup tasks with progress indicators", prompt: "Create an onboarding flow as a checklist of setup tasks with progress indicators, each item expandable with instructions and a CTA to complete it. " + STYLE_SUFFIX },
+  { id: "ob-2", name: "Tour tooltips", cat: "onboarding", desc: "Guided tour with tooltip callouts on UI elements", prompt: "Create an onboarding experience as a guided tour with tooltip callouts pointing to specific UI elements, each with a short explanation and next/skip buttons. " + STYLE_SUFFIX },
+  { id: "ob-3", name: "Video walkthrough modal", cat: "onboarding", desc: "Modal with embedded video and get started CTA", prompt: "Create an onboarding modal with an embedded walkthrough video as the centerpiece and a CTA to dismiss or get started. " + STYLE_SUFFIX },
+  { id: "ob-4", name: "Illustrated empty state", cat: "onboarding", desc: "Custom illustration, heading, supporting text, CTA", prompt: "Create an empty state with a custom illustration, short heading, supporting sentence, and a single clear CTA. " + STYLE_SUFFIX },
+  // Blog / Content
+  { id: "bl-1", name: "Magazine grid", cat: "blog-content", desc: "Large featured post with smaller cards below", prompt: "Create a blog layout as a magazine-style grid \u2014 one large featured post at the top and smaller post cards arranged in a grid beneath. " + STYLE_SUFFIX },
+  { id: "bl-2", name: "Single column reading view", cat: "blog-content", desc: "Clean single-column with generous line spacing", prompt: "Create a blog post layout as a clean single-column reading view with generous line spacing and a readable text column width. " + STYLE_SUFFIX },
+  { id: "bl-3", name: "Sidebar TOC", cat: "blog-content", desc: "Sticky table of contents highlighting current section", prompt: "Create a blog post layout with a sticky table of contents sidebar that highlights the current section as the user scrolls. " + STYLE_SUFFIX },
+  { id: "bl-4", name: "Card grid with filters", cat: "blog-content", desc: "Post card grid with category filter tags", prompt: "Create a blog layout as a grid of post cards with category filter tags above that filter the visible posts on click. " + STYLE_SUFFIX },
+  // Contact
+  { id: "ct-1", name: "Split form + details", cat: "contact", desc: "Contact form on one side, details on the other", prompt: "Create a contact section as a split layout \u2014 the contact form on one side and contact details (email, phone, address, hours) on the other. " + STYLE_SUFFIX },
+  { id: "ct-2", name: "Support channel cards", cat: "contact", desc: "Grid of cards for chat, email, docs, community", prompt: "Create a contact section as a grid of cards for different support channels (live chat, email, docs, community), each with an icon and CTA. " + STYLE_SUFFIX },
+  { id: "ct-3", name: "Full-page minimal form", cat: "contact", desc: "Full-page centered form with minimal fields", prompt: "Create a contact section as a full-page centered form with a single heading, minimal fields, and one submit button. " + STYLE_SUFFIX },
+  // Bonus
+  { id: "bn-1", name: "Comparison table (us vs competitors)", cat: "bonus", desc: "Your product vs competitors with checkmarks/dashes", prompt: "Create a comparison table with your product as one column and competitors as the others, using checkmarks and dashes to show feature differences. " + STYLE_SUFFIX },
+  { id: "bn-2", name: "Feature announcement banner", cat: "bonus", desc: "Slim bar with 'new' tag, message, link, dismiss", prompt: "Create an announcement banner as a slim bar at the top of the page with a \"new\" tag, short message, inline link, and a dismiss button. " + STYLE_SUFFIX },
+  { id: "bn-3", name: "Cookie banner", cat: "bonus", desc: "Bottom-corner card with accept/reject and settings", prompt: "Create a cookie banner as a clean bottom-corner card with a short message, accept/reject buttons, and a settings link. " + STYLE_SUFFIX },
+  { id: "bn-4", name: "404 page", cat: "bonus", desc: "'Page not found' message with CTAs for home/support", prompt: "Create a 404 page with a clear \"page not found\" message, a short explanation, and CTAs to go back home or contact support. " + STYLE_SUFFIX },
+  { id: "bn-5", name: "Loading state", cat: "bonus", desc: "Skeleton layout with shimmer animation", prompt: "Create a loading state with a skeleton layout that mirrors the final content structure, using subtle shimmer animation on placeholder blocks. " + STYLE_SUFFIX }
+];
+
+const combos = [
+  { name: "SaaS Landing Page", items: ["nv-6","hr-1","ft-2","st-2","pr-2","ts-1","fq-1","cta-1","ft-1f"] },
+  { name: "Product Launch", items: ["nv-5","hr-7","hr-3","ft-3","bn-2","cta-6","ft-3f"] },
+  { name: "Dashboard App", items: ["nv-4","ds-1","ds-5","ob-1","ds-6"] },
+  { name: "Mobile App Web", items: ["nv-8","hr-6","ft-7","ts-2","pr-6","cta-3"] }
+];
+
+let activeCat = "all";
+let searchQuery = "";
+
+function renderCategories() {
+  const el = document.getElementById("categories");
+  el.innerHTML = categories.map(c =>
+    `<div class="chip ${c.id === activeCat ? 'active' : ''}" onclick="setCategory('${c.id}')">${c.name_zh}<span class="count">${c.count}</span></div>`
+  ).join("");
+}
+
+function setCategory(id) {
+  activeCat = id;
+  renderCategories();
+  renderPrompts();
+}
+
+function renderPrompts() {
+  const grid = document.getElementById("promptsGrid");
+  let filtered = prompts;
+  if (activeCat !== "all") filtered = filtered.filter(p => p.cat === activeCat);
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    filtered = filtered.filter(p =>
+      p.id.toLowerCase().includes(q) ||
+      p.name.toLowerCase().includes(q) ||
+      p.desc.toLowerCase().includes(q) ||
+      p.cat.toLowerCase().includes(q)
+    );
+  }
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>未找到匹配的提示词</p></div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(p => {
+    const cat = categories.find(c => c.id === p.cat);
+    return `<div class="prompt-card" onclick="openModal('${p.id}')">
+      <div class="card-header"><span class="card-id">${p.id}</span></div>
+      <div class="card-name">${p.name}</div>
+      <div class="card-desc">${p.desc}</div>
+      <span class="card-category">${cat ? cat.name_zh : p.cat}</span>
+    </div>`;
+  }).join("");
+}
+
+function openModal(id) {
+  const p = prompts.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById("modalId").textContent = p.id;
+  document.getElementById("modalName").textContent = p.name;
+  document.getElementById("modalDesc").textContent = p.desc;
+  document.getElementById("modalPrompt").textContent = p.prompt;
+  document.getElementById("modal").classList.add("active");
+  document.getElementById("copyBtn").classList.remove("copied");
+  document.getElementById("copyBtn").innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Prompt';
+}
+
+function closeModal() {
+  document.getElementById("modal").classList.remove("active");
+}
+
+function copyPrompt() {
+  const text = document.getElementById("modalPrompt").textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById("copyBtn");
+    btn.classList.add("copied");
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+    setTimeout(() => {
+      btn.classList.remove("copied");
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Prompt';
+    }, 2000);
+  });
+}
+
+function renderCombos() {
+  const el = document.getElementById("combosContainer");
+  el.innerHTML = combos.map(c =>
+    `<div class="combo-card"><h3>${c.name}</h3><div class="combo-chips">${c.items.map(i => `<span class="combo-chip">${i}</span>`).join("")}</div></div>`
+  ).join("");
+}
+
+document.getElementById("searchInput").addEventListener("input", e => {
+  searchQuery = e.target.value;
+  renderPrompts();
+});
+
+document.getElementById("modal").addEventListener("click", e => {
+  if (e.target === document.getElementById("modal")) closeModal();
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeModal();
+});
+
+renderCategories();
+renderPrompts();
+renderCombos();
+</script>
+</body>
+</html>

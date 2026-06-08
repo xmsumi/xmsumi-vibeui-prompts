@@ -1,0 +1,1194 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>码搭AI - AI 驱动的新一代内容创作平台</title>
+    <style>
+      :root {
+        --ink: #18211f;
+        --soft-ink: #34433f;
+        --muted: #65736f;
+        --paper: #f7f8f3;
+        --panel: #ffffff;
+        --line: #dfe6df;
+        --green: #147d5f;
+        --leaf: #b7e37d;
+        --sun: #ffbf47;
+        --red: #f66b5f;
+        --blue: #3667d6;
+        --violet: #7c5cff;
+        --shadow: 0 26px 70px rgba(24, 33, 31, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", "Microsoft YaHei", sans-serif;
+        color: var(--ink);
+        background: var(--paper);
+        line-height: 1.5;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      .announce {
+        position: fixed;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 30;
+        width: min(760px, calc(100% - 28px));
+        min-height: 42px;
+        border: 1px solid rgba(20, 125, 95, 0.25);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(18px);
+        box-shadow: 0 14px 40px rgba(24, 33, 31, 0.1);
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 8px 6px 14px;
+        color: var(--soft-ink);
+        font-size: 13px;
+        font-weight: 720;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 25px;
+        padding: 0 10px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 850;
+      }
+
+      .announce button {
+        width: 30px;
+        height: 30px;
+        border: 0;
+        border-radius: 50%;
+        background: #eef3ed;
+        cursor: pointer;
+        color: var(--soft-ink);
+      }
+
+      .nav {
+        position: fixed;
+        top: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 25;
+        width: min(1040px, calc(100% - 32px));
+        min-height: 60px;
+        padding: 8px 10px 8px 14px;
+        border: 1px solid rgba(223, 230, 223, 0.9);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.86);
+        backdrop-filter: blur(18px);
+        box-shadow: 0 14px 46px rgba(24, 33, 31, 0.11);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 900;
+        letter-spacing: 0;
+      }
+
+      .mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        background:
+          linear-gradient(135deg, var(--green) 0 56%, var(--sun) 56% 100%);
+        color: #fff;
+        box-shadow: 0 12px 28px rgba(20, 125, 95, 0.25);
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        color: #51605c;
+        font-size: 14px;
+        font-weight: 760;
+      }
+
+      .btn {
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 18px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        cursor: pointer;
+        font-weight: 850;
+        white-space: nowrap;
+        transition:
+          transform 160ms ease,
+          box-shadow 160ms ease,
+          background 160ms ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .btn-primary {
+        background: var(--ink);
+        color: #fff;
+        box-shadow: 0 16px 34px rgba(24, 33, 31, 0.2);
+      }
+
+      .btn-ghost {
+        background: #fff;
+        border-color: var(--line);
+        color: var(--ink);
+      }
+
+      .btn-green {
+        background: var(--green);
+        color: #fff;
+        box-shadow: 0 16px 34px rgba(20, 125, 95, 0.24);
+      }
+
+      .wrap {
+        width: min(1160px, calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      .hero {
+        min-height: 100vh;
+        padding: 176px 0 54px;
+        position: relative;
+        overflow: hidden;
+        background:
+          linear-gradient(115deg, rgba(183, 227, 125, 0.3), rgba(255, 191, 71, 0.18) 42%, rgba(54, 103, 214, 0.1)),
+          var(--paper);
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: auto -8% -22% -8%;
+        height: 44%;
+        background: #ffffff;
+        transform: skewY(-3deg);
+        transform-origin: left top;
+      }
+
+      .hero-grid {
+        position: relative;
+        display: grid;
+        grid-template-columns: 0.92fr 1.08fr;
+        align-items: center;
+        gap: 42px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border: 1px solid rgba(20, 125, 95, 0.25);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--green);
+        font-size: 13px;
+        font-weight: 850;
+      }
+
+      h1 {
+        margin: 22px 0 18px;
+        max-width: 630px;
+        font-size: clamp(56px, 8vw, 108px);
+        line-height: 0.92;
+        letter-spacing: 0;
+      }
+
+      .hero-copy p {
+        margin: 0;
+        max-width: 580px;
+        color: var(--soft-ink);
+        font-size: clamp(18px, 2vw, 22px);
+      }
+
+      .hero-actions {
+        margin-top: 30px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .hero-note {
+        margin-top: 22px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .studio {
+        border: 1px solid rgba(255, 255, 255, 0.72);
+        border-radius: 8px;
+        background: #15201e;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .window-bar {
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 15px;
+        background: #f8faf6;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .dots {
+        display: flex;
+        gap: 7px;
+      }
+
+      .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--red);
+      }
+
+      .dot:nth-child(2) {
+        background: var(--sun);
+      }
+
+      .dot:nth-child(3) {
+        background: var(--green);
+      }
+
+      .window-title {
+        color: #61706c;
+        font-size: 13px;
+        font-weight: 780;
+      }
+
+      .workspace {
+        min-height: 560px;
+        display: grid;
+        grid-template-columns: 170px 1fr 230px;
+        background: #ffffff;
+      }
+
+      .side {
+        padding: 16px 12px;
+        border-right: 1px solid var(--line);
+        background: #f3f7f2;
+      }
+
+      .side-title {
+        margin: 0 8px 12px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 850;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .side-item {
+        min-height: 38px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 9px;
+        border-radius: 8px;
+        color: #465652;
+        font-size: 13px;
+        font-weight: 760;
+      }
+
+      .side-item.active {
+        background: #e3f3df;
+        color: var(--green);
+      }
+
+      .editor {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        min-width: 0;
+      }
+
+      .editor-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .tabset {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+      }
+
+      .tab {
+        min-height: 28px;
+        display: inline-flex;
+        align-items: center;
+        padding: 0 10px;
+        border-radius: 999px;
+        background: #eff3ee;
+        color: #56635f;
+        font-size: 12px;
+        font-weight: 780;
+      }
+
+      .tab.active {
+        background: var(--ink);
+        color: #fff;
+      }
+
+      .sync {
+        min-height: 32px;
+        border-radius: 999px;
+        border: 0;
+        background: var(--green);
+        color: #fff;
+        padding: 0 12px;
+        font-size: 12px;
+        font-weight: 840;
+      }
+
+      .editor-body {
+        padding: 18px;
+        display: grid;
+        gap: 13px;
+      }
+
+      .md-line {
+        height: 13px;
+        border-radius: 99px;
+        background: #d7e2dc;
+      }
+
+      .md-line.title {
+        height: 28px;
+        width: 76%;
+        background: var(--ink);
+        border-radius: 6px;
+      }
+
+      .md-line.short {
+        width: 56%;
+      }
+
+      .md-line.mid {
+        width: 78%;
+      }
+
+      .code-block {
+        margin-top: 8px;
+        padding: 14px;
+        border-radius: 8px;
+        background: #111a18;
+        display: grid;
+        gap: 8px;
+      }
+
+      .code-line {
+        height: 10px;
+        border-radius: 99px;
+        background: rgba(183, 227, 125, 0.48);
+      }
+
+      .code-line:nth-child(2n) {
+        width: 78%;
+        background: rgba(255, 191, 71, 0.55);
+      }
+
+      .code-line:nth-child(3n) {
+        width: 64%;
+        background: rgba(54, 103, 214, 0.6);
+      }
+
+      .preview {
+        padding: 14px;
+        border-left: 1px solid var(--line);
+        background: #fbfcf9;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 12px;
+      }
+
+      .phone {
+        min-height: 350px;
+        border: 1px solid #d9e2db;
+        border-radius: 8px;
+        background: #fff;
+        padding: 16px;
+        box-shadow: 0 14px 28px rgba(24, 33, 31, 0.08);
+      }
+
+      .phone h3 {
+        margin: 0 0 14px;
+        font-size: 20px;
+        line-height: 1.2;
+      }
+
+      .phone p {
+        margin: 0 0 9px;
+        color: #54635f;
+        font-size: 13px;
+      }
+
+      .theme-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 7px;
+      }
+
+      .swatch {
+        height: 30px;
+        border-radius: 8px;
+        background: var(--green);
+      }
+
+      .swatch:nth-child(2) {
+        background: var(--sun);
+      }
+
+      .swatch:nth-child(3) {
+        background: var(--blue);
+      }
+
+      .swatch:nth-child(4) {
+        background: var(--red);
+      }
+
+      .ai-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 12px;
+      }
+
+      .ai-card strong {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--green);
+        font-size: 13px;
+      }
+
+      .ai-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      section {
+        padding: 90px 0;
+      }
+
+      .section-head {
+        max-width: 690px;
+        margin-bottom: 34px;
+      }
+
+      .section-head.center {
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .kicker {
+        color: var(--green);
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h2 {
+        margin: 9px 0 12px;
+        font-size: clamp(34px, 4.8vw, 58px);
+        line-height: 1.02;
+        letter-spacing: 0;
+      }
+
+      .section-head p {
+        color: var(--muted);
+        font-size: 17px;
+        margin: 0;
+      }
+
+      .stats {
+        background: #fff;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+      }
+
+      .stat {
+        min-height: 150px;
+        padding: 24px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--paper);
+      }
+
+      .stat strong {
+        display: block;
+        font-size: clamp(38px, 5vw, 62px);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .stat span {
+        display: block;
+        margin-top: 10px;
+        color: var(--muted);
+        font-weight: 760;
+      }
+
+      .capabilities {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 14px;
+      }
+
+      .cap {
+        min-height: 250px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+      }
+
+      .cap.large {
+        grid-column: span 3;
+      }
+
+      .cap.medium {
+        grid-column: span 2;
+      }
+
+      .cap h3 {
+        margin: 0 0 8px;
+        font-size: 22px;
+      }
+
+      .cap p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .mini-visual {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+
+      .mini-visual span {
+        min-height: 46px;
+        border-radius: 8px;
+        background: #e8f4df;
+      }
+
+      .mini-visual span:nth-child(2n) {
+        background: #fff0cf;
+      }
+
+      .mini-visual span:nth-child(3n) {
+        background: #e7edff;
+      }
+
+      .workflow {
+        background: #17211f;
+        color: #fff;
+      }
+
+      .workflow .section-head p {
+        color: #b8c7c2;
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+      }
+
+      .step {
+        min-height: 210px;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.055);
+      }
+
+      .step-number {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--leaf);
+        color: #13201d;
+        font-weight: 900;
+        margin-bottom: 42px;
+      }
+
+      .step h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+
+      .step p {
+        margin: 0;
+        color: #b8c7c2;
+        font-size: 14px;
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        align-items: center;
+        gap: 44px;
+      }
+
+      .theme-board {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 18px;
+        box-shadow: 0 22px 58px rgba(24, 33, 31, 0.1);
+      }
+
+      .theme-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      .theme-card {
+        min-height: 108px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        padding: 12px;
+        display: grid;
+        align-content: space-between;
+      }
+
+      .theme-card:nth-child(1) {
+        background: #eef8e7;
+      }
+
+      .theme-card:nth-child(2) {
+        background: #fff2d3;
+      }
+
+      .theme-card:nth-child(3) {
+        background: #e9efff;
+      }
+
+      .theme-card:nth-child(4) {
+        background: #ffe8e5;
+      }
+
+      .theme-card:nth-child(5) {
+        background: #edf7f4;
+      }
+
+      .theme-card:nth-child(6) {
+        background: #f4eefc;
+      }
+
+      .theme-card span {
+        height: 9px;
+        border-radius: 99px;
+        background: rgba(24, 33, 31, 0.2);
+      }
+
+      .theme-card span:first-child {
+        width: 72%;
+        height: 16px;
+        background: var(--ink);
+      }
+
+      .launch-cta {
+        padding: 88px 0;
+        color: #fff;
+        background:
+          linear-gradient(120deg, rgba(20, 125, 95, 0.98), rgba(54, 103, 214, 0.92)),
+          var(--green);
+      }
+
+      .capture {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        width: min(560px, 100%);
+        margin-top: 28px;
+      }
+
+      .capture input {
+        min-height: 52px;
+        border: 1px solid rgba(255, 255, 255, 0.38);
+        border-radius: 999px;
+        padding: 0 18px;
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        outline: none;
+      }
+
+      .capture input::placeholder {
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .footer {
+        padding: 58px 0 34px;
+        background: #0f1715;
+        color: #fff;
+        overflow: hidden;
+      }
+
+      .footer-word {
+        font-size: clamp(64px, 15vw, 180px);
+        line-height: 0.9;
+        font-weight: 950;
+        letter-spacing: 0;
+        color: rgba(255, 255, 255, 0.08);
+        margin-bottom: 24px;
+      }
+
+      .footer-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        color: #aebdb8;
+        font-size: 14px;
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      @media (max-width: 980px) {
+        .announce {
+          display: none;
+        }
+
+        .nav {
+          top: 14px;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .hero {
+          padding-top: 110px;
+        }
+
+        .hero-grid,
+        .workspace,
+        .split,
+        .capture {
+          grid-template-columns: 1fr;
+        }
+
+        .side {
+          display: none;
+        }
+
+        .preview {
+          border-left: 0;
+          border-top: 1px solid var(--line);
+        }
+
+        .stats-grid,
+        .steps {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .capabilities {
+          grid-template-columns: 1fr;
+        }
+
+        .cap.large,
+        .cap.medium {
+          grid-column: auto;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .wrap {
+          width: min(100% - 28px, 1160px);
+        }
+
+        .nav {
+          min-height: 56px;
+          border-radius: 8px;
+        }
+
+        .nav .btn {
+          display: none;
+        }
+
+        .hero-actions .btn,
+        .capture .btn {
+          width: 100%;
+        }
+
+        .workspace {
+          min-height: 0;
+        }
+
+        .studio {
+          border-radius: 8px;
+        }
+
+        .editor-top {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .stats-grid,
+        .steps,
+        .theme-grid {
+          grid-template-columns: 1fr;
+        }
+
+        section {
+          padding: 66px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="announce" id="announce">
+      <span class="tag">NEW</span>
+      <span>码搭AI 发布：面向公众号创作者的 AI Markdown 工作台现已开放体验</span>
+      <button type="button" aria-label="关闭发布通知" id="closeAnnounce">×</button>
+    </div>
+
+    <nav class="nav">
+      <a class="brand" href="#top" aria-label="码搭AI 首页">
+        <span class="mark">码</span>
+        <span>码搭AI</span>
+      </a>
+      <div class="nav-links">
+        <a href="#capabilities">核心能力</a>
+        <a href="#workflow">工作流</a>
+        <a href="#themes">主题</a>
+        <a href="#join">预约体验</a>
+      </div>
+      <a class="btn btn-primary" href="#join">立即体验</a>
+    </nav>
+
+    <main id="top">
+      <header class="hero">
+        <div class="wrap hero-grid">
+          <div class="hero-copy">
+            <span class="eyebrow">AI 驱动 · 新一代内容创作平台</span>
+            <h1>码搭AI</h1>
+            <p>
+              让创作更简单。写作、排版、管理、发布，一站搞定。
+              专为公众号内容创作者打造的 AI Markdown 工作台。
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-green" href="#join">加入发布候补</a>
+              <a class="btn btn-ghost" href="#capabilities">查看核心能力</a>
+            </div>
+            <div class="hero-note">AI 写作 · Markdown 编辑 · 公众号排版 · 内容资产 · 一键同步</div>
+          </div>
+
+          <div class="studio" aria-label="码搭AI 产品工作台预览">
+            <div class="window-bar">
+              <div class="dots" aria-hidden="true">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </div>
+              <span class="window-title">mada.ai/editor/article-424</span>
+            </div>
+            <div class="workspace">
+              <aside class="side">
+                <p class="side-title">Workspace</p>
+                <div class="side-item active">AI 创作</div>
+                <div class="side-item">文章库</div>
+                <div class="side-item">公众号主题</div>
+                <div class="side-item">代码高亮</div>
+                <div class="side-item">知识库</div>
+                <div class="side-item">发布草稿</div>
+              </aside>
+              <section class="editor" aria-label="Markdown 编辑器">
+                <div class="editor-top">
+                  <div class="tabset">
+                    <span class="tab active">Markdown</span>
+                    <span class="tab">AI 改写</span>
+                    <span class="tab">排版预览</span>
+                  </div>
+                  <button class="sync" type="button">同步公众号</button>
+                </div>
+                <div class="editor-body">
+                  <span class="md-line title"></span>
+                  <span class="md-line mid"></span>
+                  <span class="md-line"></span>
+                  <span class="md-line short"></span>
+                  <div class="code-block" aria-label="代码高亮预览">
+                    <span class="code-line"></span>
+                    <span class="code-line"></span>
+                    <span class="code-line"></span>
+                    <span class="code-line"></span>
+                  </div>
+                  <span class="md-line"></span>
+                  <span class="md-line mid"></span>
+                </div>
+              </section>
+              <aside class="preview">
+                <div class="theme-row" aria-label="公众号主题色板">
+                  <span class="swatch"></span>
+                  <span class="swatch"></span>
+                  <span class="swatch"></span>
+                  <span class="swatch"></span>
+                </div>
+                <div class="phone">
+                  <h3>如何用 AI 快速搭建个人内容系统</h3>
+                  <p>从选题到大纲，再到排版发布，创作者需要的是更连续的工作流。</p>
+                  <p>码搭AI 把 Markdown、主题样式和公众号同步放在一起。</p>
+                </div>
+                <div class="ai-card">
+                  <strong>AI 助手建议</strong>
+                  <p>标题可以更具体：加入目标读者和结果承诺，点击率更清晰。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="stats" aria-label="码搭AI 产品数据">
+        <div class="wrap stats-grid">
+          <div class="stat"><strong data-count="27">0</strong><span>公众号主题</span></div>
+          <div class="stat"><strong data-count="17">0</strong><span>代码高亮主题</span></div>
+          <div class="stat"><strong data-count="100">0%</strong><span>Markdown 支持</span></div>
+          <div class="stat"><strong>AI</strong><span>智能创作助手</span></div>
+        </div>
+      </section>
+
+      <section id="capabilities">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="kicker">核心能力</span>
+            <h2>一站式内容创作工作台。</h2>
+            <p>从 AI 写作到排版发布，覆盖内容生产全链路。</p>
+          </div>
+          <div class="capabilities">
+            <article class="cap large">
+              <div>
+                <h3>AI 对话创作</h3>
+                <p>通过自然语言对话快速生成文章、大纲、标题和内容优化建议。</p>
+              </div>
+              <div class="mini-visual">
+                <span></span><span></span><span></span><span></span>
+              </div>
+            </article>
+            <article class="cap large">
+              <div>
+                <h3>Markdown 编辑器</h3>
+                <p>专为微信公众号场景深度优化的 Markdown 编辑体验。</p>
+              </div>
+              <div class="mini-visual">
+                <span></span><span></span><span></span><span></span>
+              </div>
+            </article>
+            <article class="cap medium">
+              <div>
+                <h3>公众号排版</h3>
+                <p>27+ 精美主题风格，自定义样式，一键复制到公众号。</p>
+              </div>
+              <div class="mini-visual">
+                <span></span><span></span><span></span><span></span>
+              </div>
+            </article>
+            <article class="cap medium">
+              <div>
+                <h3>内容资产管理</h3>
+                <p>统一管理文章、素材、模板与知识库，打造个人内容中心。</p>
+              </div>
+              <div class="mini-visual">
+                <span></span><span></span><span></span><span></span>
+              </div>
+            </article>
+            <article class="cap medium">
+              <div>
+                <h3>一键同步公众号</h3>
+                <p>支持一键同步微信公众号草稿箱，从编辑到发布流程更顺畅。</p>
+              </div>
+              <div class="mini-visual">
+                <span></span><span></span><span></span><span></span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="workflow" id="workflow">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="kicker">Creator Workflow</span>
+            <h2>从一个选题，到一篇可以发布的公众号文章。</h2>
+            <p>码搭AI 将创作过程拆成连续步骤，每一步都能被 AI 辅助，也能被创作者精细掌控。</p>
+          </div>
+          <div class="steps">
+            <article class="step"><div class="step-number">1</div><h3>对话起稿</h3><p>输入主题、观点和读者对象，生成标题与大纲。</p></article>
+            <article class="step"><div class="step-number">2</div><h3>Markdown 写作</h3><p>用熟悉的语法编辑正文、引用、列表和代码块。</p></article>
+            <article class="step"><div class="step-number">3</div><h3>主题排版</h3><p>切换公众号主题，细调色彩、字号和段落节奏。</p></article>
+            <article class="step"><div class="step-number">4</div><h3>资产沉淀</h3><p>保存素材、模板、知识库和历史文章，形成内容中心。</p></article>
+            <article class="step"><div class="step-number">5</div><h3>同步发布</h3><p>一键同步到微信公众号草稿箱，减少复制粘贴损耗。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section id="themes">
+        <div class="wrap split">
+          <div class="section-head">
+            <span class="kicker">Themes</span>
+            <h2>公众号主题与代码高亮，都为创作者准备好。</h2>
+            <p>
+              27+ 公众号主题覆盖知识科普、技术文章、商业观察和个人品牌；
+              17+ 代码高亮主题让技术内容在公众号里保持清晰。
+            </p>
+          </div>
+          <div class="theme-board" aria-label="主题样式预览">
+            <div class="theme-grid">
+              <div class="theme-card"><span></span><span></span><span></span></div>
+              <div class="theme-card"><span></span><span></span><span></span></div>
+              <div class="theme-card"><span></span><span></span><span></span></div>
+              <div class="theme-card"><span></span><span></span><span></span></div>
+              <div class="theme-card"><span></span><span></span><span></span></div>
+              <div class="theme-card"><span></span><span></span><span></span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="launch-cta" id="join">
+        <div class="wrap">
+          <span class="kicker" style="color: #dff7ce">Early Access</span>
+          <h2>准备把下一篇公众号文章交给更顺的工作台。</h2>
+          <p style="max-width: 650px; color: rgba(255,255,255,0.82); margin: 0">
+            加入码搭AI 产品发布名单，第一时间体验 AI 创作、Markdown 编辑、公众号排版和草稿箱同步。
+          </p>
+          <form class="capture">
+            <input type="email" placeholder="输入邮箱，获取发布通知" aria-label="邮箱地址" />
+            <button class="btn btn-primary" type="submit">预约体验</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap">
+        <div class="footer-word">码搭AI</div>
+        <div class="footer-row">
+          <div>© 2026 码搭AI. AI 驱动的新一代内容创作平台。</div>
+          <div class="footer-links">
+            <a href="#capabilities">核心能力</a>
+            <a href="#workflow">工作流</a>
+            <a href="#themes">主题</a>
+            <a href="#join">预约体验</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const announce = document.querySelector("#announce");
+      document.querySelector("#closeAnnounce").addEventListener("click", () => {
+        announce.style.display = "none";
+      });
+
+      const stats = document.querySelectorAll("[data-count]");
+      const animateNumber = (node) => {
+        const target = Number(node.dataset.count);
+        const suffix = node.textContent.includes("%") ? "%" : "+";
+        let current = 0;
+        const steps = 36;
+        const step = target / steps;
+        const tick = () => {
+          current += step;
+          if (current >= target) {
+            node.textContent = `${target}${suffix}`;
+            return;
+          }
+          node.textContent = `${Math.round(current)}${suffix}`;
+          requestAnimationFrame(tick);
+        };
+        tick();
+      };
+
+      const observer = new IntersectionObserver(
+        (entries, self) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            animateNumber(entry.target);
+            self.unobserve(entry.target);
+          });
+        },
+        { threshold: 0.5 }
+      );
+      stats.forEach((stat) => observer.observe(stat));
+
+      document.querySelector(".capture").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const button = event.currentTarget.querySelector("button");
+        button.textContent = "已加入名单";
+      });
+    </script>
+  </body>
+</html>
