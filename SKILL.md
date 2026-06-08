@@ -5,7 +5,7 @@ description: "VibeUI prompt library for rapid UI component generation in vibecod
 
 # VibeUI — Vibecoding UI Prompt Library
 
-Generate production-ready UI components using 92 curated prompts from [VibeUI](https://vibeui.online/).
+Generate production-ready UI components using 92 curated prompts from VibeUI.
 
 ## How It Works
 

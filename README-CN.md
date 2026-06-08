@@ -4,7 +4,7 @@
 
 **[English](README.md)**
 
-基于 [VibeUI](https://vibeui.online/) 的提示词库，为 AI 辅助编码（Vibecoding）场景设计。通过结构化的提示词模板，快速生成 Hero、Pricing、Nav、Dashboard 等常见 UI 组件，支持截图风格匹配和自定义设计系统。
+VibeUI 提示词库，专为 AI 辅助编码（Vibecoding）场景设计。通过结构化的提示词模板，快速生成 Hero、Pricing、Nav、Dashboard 等常见 UI 组件，支持截图风格匹配和自定义设计系统。
 
 ## Features
 

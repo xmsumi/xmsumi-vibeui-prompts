@@ -4,7 +4,7 @@
 
 **[中文文档](README-CN.md)**
 
-A curated prompt library based on [VibeUI](https://vibeui.online/), designed for AI-assisted coding (Vibecoding) workflows. Generate production-ready UI components — Hero sections, Pricing, Navigation, Dashboards, and more — with screenshot-based style matching and custom design system support.
+VibeUI - A curated prompt library , designed for AI-assisted coding (Vibecoding) workflows. Generate production-ready UI components — Hero sections, Pricing, Navigation, Dashboards, and more — with screenshot-based style matching and custom design system support.
 
 ## Features
 
