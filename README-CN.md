@@ -98,10 +98,10 @@ nv-8 + hr-6 + ft-7 + ts-2 + pr-6 + cta-3
 
 ```bash
 # 项目级安装
-git clone https://github.com/YOUR_USERNAME/xmsumi-vibeui-prompts.git .qoder/skills/xmsumi-vibeui-prompts
+git clone https://github.com/xmsumi/xmsumi-vibeui-prompts.git .qoder/skills/xmsumi-vibeui-prompts
 
 # 全局安装
-git clone https://github.com/YOUR_USERNAME/xmsumi-vibeui-prompts.git ~/.qoder/skills/xmsumi-vibeui-prompts
+git clone https://github.com/xmsumi/xmsumi-vibeui-prompts.git ~/.qoder/skills/xmsumi-vibeui-prompts
 ```
 
 ### Claude Code

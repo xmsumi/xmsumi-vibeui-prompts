@@ -98,10 +98,10 @@ Clone or copy this repo into your project's `.qoder/skills/` directory:
 
 ```bash
 # Project-level install
-git clone https://github.com/YOUR_USERNAME/xmsumi-vibeui-prompts.git .qoder/skills/xmsumi-vibeui-prompts
+git clone https://github.com/xmsumi/xmsumi-vibeui-prompts.git .qoder/skills/xmsumi-vibeui-prompts
 
 # Global install
-git clone https://github.com/YOUR_USERNAME/xmsumi-vibeui-prompts.git ~/.qoder/skills/xmsumi-vibeui-prompts
+git clone https://github.com/xmsumi/xmsumi-vibeui-prompts.git ~/.qoder/skills/xmsumi-vibeui-prompts
 ```
 
 ### Claude Code
