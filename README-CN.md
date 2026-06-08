@@ -108,6 +108,18 @@ git clone https://github.com/xmsumi/xmsumi-vibeui-prompts.git ~/.qoder/skills/xm
 
 将 `SKILL.md` 放入 `.claude/skills/` 目录即可。
 
+### Codex
+
+将本仓库克隆或复制到项目的 `.codex/skills/` 目录：
+
+```bash
+# 项目级安装
+git clone https://github.com/xmsumi/xmsumi-vibeui-prompts.git .codex/skills/xmsumi-vibeui-prompts
+
+# 全局安装
+git clone https://github.com/xmsumi/xmsumi-vibeui-prompts.git ~/.codex/skills/xmsumi-vibeui-prompts
+```
+
 ## Usage
 
 ### 在 AI IDE 中使用
